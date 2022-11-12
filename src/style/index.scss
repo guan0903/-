@@ -1,0 +1,38 @@
+@import 'antd/dist/antd.css';
+@import '@ant-design/pro-components/dist/components.css';
+.actives{
+    background-color: rgb(255, 149, 0);
+}
+nav{
+    width: 1050px;
+    height: 50px;
+    background: rgb(39, 39, 39);
+    color: rgb(172, 171, 171);
+    line-height: 50px;
+    padding-left: 80px;
+    border-bottom: 1px solid #ccc ;
+}
+.left{
+    background: rgb(39, 39, 39);
+    color: #fff;
+}
+.right{
+    background: rgb(73, 73, 73);
+    color: #fff;
+    display: flex;
+    overflow: hidden;
+    flex-wrap: wrap;
+    overflow-y: scroll;
+}
+#components-layout-demo-side .logo {
+    height: 32px;
+    margin: 16px;
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  .site-layout .site-layout-background {
+    background: #fff;
+  }
+  .ant-breadcrumb{
+    background: #fff;
+  }

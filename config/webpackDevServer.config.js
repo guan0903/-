@@ -7,7 +7,9 @@ const ignoredFiles = require('react-dev-utils/ignoredFiles');
 const redirectServedPath = require('react-dev-utils/redirectServedPathMiddleware');
 const paths = require('./paths');
 const getHttpsConfig = require('./getHttpsConfig');
-
+const userArr = require('../user.json')
+const jwt = require('jsonwebtoken')
+const Mock = require("mockjs")
 const host = process.env.HOST || '0.0.0.0';
 const sockHost = process.env.WDS_SOCKET_HOST;
 const sockPath = process.env.WDS_SOCKET_PATH; // default: '/ws'
@@ -106,7 +108,70 @@ module.exports = function (proxy, allowedHost) {
       // middlewares before `redirectServedPath` otherwise will not have any effect
       // This lets us fetch source contents from webpack for the error overlay
       devServer.app.use(evalSourceMapMiddleware(devServer));
-
+      devServer.app.get("/api/list",(req,res)=>{
+        res.send(Mock.mock({
+          "list|10":[{
+            id:"@id",
+            title:"@cword(5,7)",
+            flag:false,
+            "children|30":[{
+              id:"@id",
+              title:"@cword(5,7)",
+              img:"@image(100x100,@color)"
+            }]
+          }]
+        }))
+      })
+      devServer.app.get("/api/table",(req,res)=>{
+        res.send(Mock.mock({
+          "list|30":[{
+            id:"@id",
+            "key|+1":1,
+            "img":"@image(100x100,@color)",
+            "name":"@cname(4)",
+            "type|1":["衣柜","床","沙发","鞋柜"],
+            "price|100-1000":100
+          }]
+        }).list)
+      })
+      devServer.app.get("/api/login",(req,res)=>{
+        let {username,password} = req.query
+        let flag = userArr.some(item=>item.username === username && item.password === password)
+        const token = jwt.sign({
+          username,
+          password,
+          'time': Date.now(),
+        },"aa")
+        if (flag) {
+          res.send({
+            code:200,
+            message:"登陆成功",
+            token
+          })
+        }else{
+          res.send({
+            code:403,
+            message:"用户名或密码错误"
+          })
+        }
+      })
+      devServer.app.get("/api/register",(req,res)=>{
+        let {username} = req.query
+        let flag = userArr.some(item=>item.username === username )
+        if (flag) {
+          res.send({
+            code:203,
+            message:"此用户名已注册！"
+          })
+        }else{
+          userArr.push(req.query)
+          fs.writeFileSync("./user.json",JSON.stringify(userArr))
+          res.send({
+            code:202,
+            message:"注册成功"
+          })
+        }
+      })
       if (fs.existsSync(paths.proxySetup)) {
         // This registers user provided middleware for proxy reasons
         require(paths.proxySetup)(devServer.app);
